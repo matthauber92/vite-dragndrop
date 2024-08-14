@@ -536,7 +536,7 @@ function App() {
             }}>
               <Grid container spacing={0} justifyContent="space-between" sx={{margin: 0, width: "100%", flexGrow: 1}}>
                 {daysOfWeek.map((day, index) => (
-                  <Grid item xs={2.4} key={index + 1} sx={{p: 0, height: '100%'}}>
+                  <Grid item xs={12} sm={6} md={2.4} key={index + 1} sx={{p: 0, height: '100%'}}>
                     <Card variant="outlined" sx={{height: "100%"}}>
                       <CustomCardHeader day={format(day, "EEEE, MMM d")}/>
                       <Box sx={{flexGrow: 1, padding: "8px"}}>
