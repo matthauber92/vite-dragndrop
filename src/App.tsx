@@ -27,8 +27,25 @@ import {
   Search,
   FilterList,
   MoreVert,
-  Help
+  Help, Menu
 } from "@mui/icons-material";
+
+// Apply global styles to remove window scroll bars
+const styles = {
+  html: {
+    overflow: 'hidden',
+    height: '100%',
+  },
+  body: {
+    overflow: 'hidden',
+    height: '100%',
+    margin: 0,
+    padding: 0,
+  },
+};
+
+Object.assign(document.documentElement.style, styles.html);
+Object.assign(document.body.style, styles.body);
 
 interface Item {
   id: string;
@@ -306,7 +323,10 @@ function App() {
           <Grid container>
             <Grid item md={4}>
               <Box display={'flex'}>
-                <Typography variant="h6" fontWeight="bold">
+                <IconButton sx={{mr: 1}} onClick={() => drawerOpen ? setDrawerOpen(false) : setDrawerOpen(true)}>
+                  <Menu/>
+                </IconButton>
+                <Typography variant="h6" fontWeight="bold" sx={{mt: 0.5}}>
                   Crew Board
                 </Typography>
               </Box>
@@ -319,7 +339,7 @@ function App() {
             </Grid>
 
             <Grid item md={4}>
-              <IconButton sx={{float: 'right'}} onClick={() => setDrawerOpen(true)}>
+              <IconButton sx={{float: 'right'}}>
                 <Help/>
               </IconButton>
             </Grid>
@@ -450,7 +470,6 @@ function App() {
                 />
               </Tabs>
 
-
               <Droppable droppableId="0" isCombineEnabled>
                 {(provided) => (
                   <div
@@ -492,13 +511,13 @@ function App() {
               flexGrow: 1,
               display: 'flex',
               flexDirection: 'column',
-              overflow: 'hidden',
+              overflowY: 'auto', // Ensure the main content can scroll
               transition: 'width 0.3s ease',
             }}
           >
             <Box sx={{
               flexGrow: 1,
-              overflowY: 'auto',
+              overflowY: 'auto', // Allow vertical scrolling in main content
               display: 'flex',
               flexDirection: 'column',
               height: 'calc(100vh - 64px)'
@@ -531,12 +550,22 @@ function App() {
                                         provided.draggableProps.style || {}
                                       )}
                                     >
-                                      <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                                        <Box>
+                                      <Box sx={{
+                                        position: 'relative',
+                                        paddingRight: '40px'
+                                      }}>
+                                        <Box sx={{flexShrink: 1}}>
                                           <Typography variant="subtitle2">{item.content}</Typography>
                                           <Typography variant="body2" color="textSecondary">{item.details}</Typography>
                                         </Box>
-                                        <Box>
+                                        <Box sx={{
+                                          position: 'absolute',
+                                          top: 0,
+                                          right: 0,
+                                          display: 'flex',
+                                          alignItems: 'center',
+                                          flexShrink: 1
+                                        }}>
                                           <Chip
                                             label="SP"
                                             color="success"
