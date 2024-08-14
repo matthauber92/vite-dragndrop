@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Box, Typography, Card, CardContent, CardHeader, Drawer, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Grid, Box, Typography, Card, CardHeader, Drawer, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { addDays, startOfWeek, format } from "date-fns";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -56,22 +56,34 @@ const move = (
 
 const grid = 8;
 
-const getItemStyle = (isDragging: boolean, draggableStyle: React.CSSProperties = {}): React.CSSProperties => ({
+const getItemStyle = (
+  isDragging: boolean,
+  draggableStyle: React.CSSProperties = {}
+): React.CSSProperties => ({
   userSelect: "none",
   padding: grid,
   margin: `0 0 ${grid}px 0`,
   background: isDragging ? "#e0f7fa" : "#fff",
   border: "1px solid #ddd",
-  borderRadius: "4px",
+  borderTopWidth: '2px',
+  borderTopColor: '#1876d2',
+  borderRadius: "2px",
+  borderBottom: "4px solid #ddd",
   ...draggableStyle,
 });
 
-const getListStyle = (isDraggingOver: boolean): React.CSSProperties => ({
-  background: isDraggingOver ? "#f1f1f1" : "#f9f9f9",
+const getCrewStyle = (
+  isDragging: boolean,
+  draggableStyle: React.CSSProperties = {}
+): React.CSSProperties => ({
+  userSelect: "none",
   padding: grid,
+  margin: `0 0 ${grid}px 0`,
+  background: isDragging ? "#e0f7fa" : "#fff",
   border: "1px solid #ddd",
-  borderRadius: "4px",
-  overflowY: "visible",
+  borderRadius: "2px",
+  borderBottom: "4px solid #ddd",
+  ...draggableStyle,
 });
 
 const renderCombinedItems = (combinedItems?: Item[]) => {
@@ -79,7 +91,11 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
 
   return (
     <Accordion   sx={{
-      boxShadow: 'none', // Removes the box shadow from the Accordion
+      '& .MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters': {
+        minHeight: '20px'
+      },
+      boxShadow: 'none',
+      height: '50%'
     }}>
       <AccordionSummary
         expandIcon={
@@ -209,10 +225,9 @@ function App() {
               Crew
             </Typography>
             <Droppable droppableId="0" isCombineEnabled>
-              {(provided, snapshot) => (
+              {(provided) => (
                 <div
                   ref={provided.innerRef}
-                  style={getListStyle(snapshot.isDraggingOver)}
                   {...provided.droppableProps}
                 >
                   {state[0].map((item, index) => (
@@ -226,7 +241,7 @@ function App() {
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}
-                          style={getItemStyle(
+                          style={getCrewStyle(
                             snapshot.isDragging,
                             provided.draggableProps.style || {}
                           )}
@@ -255,12 +270,11 @@ function App() {
                       title={format(day, "EEEE, MMM d")}
                       sx={{ textAlign: "center", backgroundColor: "#f0f0f0", padding: "4px" }}
                     />
-                    <CardContent sx={{ flexGrow: 1, padding: "8px" }}>
+                    <Box sx={{ flexGrow: 1, padding: "8px" }}>
                       <Droppable droppableId={`${index + 1}`} isCombineEnabled>
-                        {(provided, snapshot) => (
+                        {(provided) => (
                           <div
                             ref={provided.innerRef}
-                            style={getListStyle(snapshot.isDraggingOver)}
                             {...provided.droppableProps}
                           >
                             {state[index + 1].map((item, idx) => (
@@ -290,7 +304,7 @@ function App() {
                           </div>
                         )}
                       </Droppable>
-                    </CardContent>
+                    </Box>
                   </Card>
                 </Grid>
               ))}
