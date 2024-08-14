@@ -139,7 +139,8 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
           minHeight: '20px'
         },
         boxShadow: 'none',
-        height: '50%'
+        height: '50%',
+        position: 'inherit'
       }}
     >
       <AccordionSummary
