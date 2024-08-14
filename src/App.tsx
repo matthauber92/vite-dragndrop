@@ -1,8 +1,23 @@
-import React, { useState } from "react";
-import { Grid, Box, Typography, Card, Drawer, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { addDays, startOfWeek, format } from "date-fns";
-import { ExpandMore, WbSunny, Nightlight, Fullscreen} from "@mui/icons-material";
+import React, {useState} from "react";
+import {
+  Grid,
+  Box,
+  Typography,
+  Card,
+  Drawer,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  IconButton,
+  Chip,
+  TextField,
+  Tabs,
+  Tab,
+  InputAdornment
+} from "@mui/material";
+import {DragDropContext, Droppable, Draggable, DropResult} from "@hello-pangea/dnd";
+import {addDays, startOfWeek, format} from "date-fns";
+import {ExpandMore, WbSunny, Nightlight, Fullscreen, Close, Search, FilterList} from "@mui/icons-material";
 
 interface Item {
   id: string;
@@ -13,7 +28,7 @@ interface Item {
 
 // Generate mock data for items
 const getItems = (count: number, offset = 0): Item[] =>
-  Array.from({ length: count }, (_v, k) => k).map((k) => ({
+  Array.from({length: count}, (_v, k) => k).map((k) => ({
     id: `item-${k + offset}-${new Date().getTime()}`,
     content: `Sortie ${k + offset}`,
     details: `Details for Sortie ${k + offset}`,
@@ -21,7 +36,7 @@ const getItems = (count: number, offset = 0): Item[] =>
 
 // Initial data setup for each column with much more mock data
 const initialData = [
-  getItems(50),  // Backlog with 50 items
+  getItems(50), // Backlog with 50 items
   getItems(50, 50), // Monday with 50 items
   getItems(50, 100), // Tuesday with 50 items
   getItems(50, 150), // Wednesday with 50 items
@@ -65,8 +80,8 @@ const getItemStyle = (
   margin: `0 0 ${grid}px 0`,
   background: isDragging ? "#e0f7fa" : "#fff",
   border: "1px solid #ddd",
-  borderTopWidth: '2px',
-  borderTopColor: '#1876d2',
+  borderTopWidth: "2px",
+  borderTopColor: "#1876d2",
   borderRadius: "2px",
   borderBottom: "4px solid #ddd",
   ...draggableStyle,
@@ -90,13 +105,15 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
   if (!combinedItems || combinedItems.length === 0) return null;
 
   return (
-    <Accordion   sx={{
-      '& .MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters': {
-        minHeight: '20px'
-      },
-      boxShadow: 'none',
-      height: '50%'
-    }}>
+    <Accordion
+      sx={{
+        '& .MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters': {
+          minHeight: '20px'
+        },
+        boxShadow: 'none',
+        height: '50%'
+      }}
+    >
       <AccordionSummary
         expandIcon={
           <ExpandMore
@@ -120,10 +137,40 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
         }}
       />
 
-      <AccordionDetails>
+      <AccordionDetails sx={{p: 0}}>
         {combinedItems.map((item) => (
-          <Box key={item.id} sx={{ marginBottom: 1 }}>
-            <Typography variant="body2">{item.content}</Typography>
+          <Box
+            key={item.id}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              p: 0.5,
+              m: 0.5,
+              border: "1.5px solid #ddd",
+              borderRadius: "2px",
+              borderBottom: "2.5px solid #ddd",
+            }}
+          >
+            <Typography variant="body2" color="primary" sx={{flexShrink: 0, marginRight: 1}}>
+              Short Name
+            </Typography>
+            <Chip
+              label={item.content}
+              size="small"
+              sx={{
+                fontSize: '0.75rem', // Smaller font size
+                height: '22px', // Adjust height
+                marginRight: 1,
+                '.MuiChip-label': {
+                  paddingLeft: '6px', // Adjust padding for a tighter fit
+                  paddingRight: '6px',
+                }
+              }}
+            />
+            <IconButton size="small" color="primary">
+              <Close fontSize="small"/>
+            </IconButton>
           </Box>
         ))}
       </AccordionDetails>
@@ -131,41 +178,42 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
   );
 };
 
-function CustomCardHeader({ day }: { day: string }) {
+function CustomCardHeader({day}: { day: string }) {
   return (
-    <Box sx={{ backgroundColor: '#fff', border: '1px solid #ddd' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 0.5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <WbSunny fontSize="small" color="primary" sx={{fontSize: 14}} />
-          <Typography variant="body2" sx={{ ml: 1 }}>
+    <Box sx={{backgroundColor: '#fff', border: '1px solid #ddd'}}>
+      <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 0.5}}>
+        <Box sx={{display: 'flex', alignItems: 'center'}}>
+          <WbSunny fontSize="small" color="primary" sx={{fontSize: 14}}/>
+          <Typography variant="body2" sx={{ml: 1}}>
             00:00
           </Typography>
-          <Nightlight color="primary" fontSize="small" sx={{ ml: 2, fontSize: 14 }} />
-          <Typography variant="body2" sx={{ ml: 1 }}>
+          <Nightlight color="primary" fontSize="small" sx={{ml: 2, fontSize: 14}}/>
+          <Typography variant="body2" sx={{ml: 1}}>
             00:00 00%
           </Typography>
         </Box>
       </Box>
-      <Box sx={{ borderBottom: '1px solid #ddd', m: 0 }} />
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 0.5 }}>
-        <Typography variant="body2" sx={{ fontWeight: 'bold', fontSize: 12 }}>
+      <Box sx={{borderBottom: '1px solid #ddd', m: 0}}/>
+      <Box sx={{display: 'flex', justifyContent: 'space-between', p: 0.5}}>
+        <Typography variant="body2" sx={{fontWeight: 'bold', fontSize: 12}}>
           {day}
         </Typography>
-        <Fullscreen fontSize="small" />
+        <Fullscreen fontSize="small"/>
       </Box>
     </Box>
   );
 }
 
 function App() {
-  const [currentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [currentWeekStart] = useState<Date>(startOfWeek(new Date(), {weekStartsOn: 1}));
   const [state, setState] = useState<Item[][]>(initialData);
-  const [, setDrawerOpen] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
+  const [tabValue, setTabValue] = useState(0); // For tab selection
 
-  const daysOfWeek = Array.from({ length: 5 }, (_, i) => addDays(currentWeekStart, i));
+  const daysOfWeek = Array.from({length: 5}, (_, i) => addDays(currentWeekStart, i));
 
   function onDragEnd(result: DropResult) {
-    const { source, destination, combine } = result;
+    const {source, destination, combine} = result;
 
     if (!destination && !combine) {
       return;
@@ -224,15 +272,19 @@ function App() {
     }
   }
 
-  const drawerWidth = 300; // Set the drawer width
+  const drawerWidth = 275; // Set the drawer width
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Box sx={{ display: 'flex', height: '98vh', width: '98vw', overflow: 'hidden' }}>
+      <Box sx={{display: 'flex', height: '98vh', width: '98vw', overflow: 'hidden', margin: 0}}>
         <Drawer
           variant="persistent"
           anchor="left"
-          open
+          open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           sx={{
             width: drawerWidth,
@@ -244,12 +296,87 @@ function App() {
           }}
         >
           <Box
-            sx={{ padding: 2, height: "100%" }}
+            sx={{
+              padding: 2,
+              height: "100%",
+              margin: 0,
+              position: 'relative',
+            }}
             role="presentation"
           >
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>
+            <IconButton
+              size="small"
+              color="primary"
+              onClick={() => setDrawerOpen(false)}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+              }}
+            >
+              <Close fontSize="small"/>
+            </IconButton>
+            <Typography variant="h6" sx={{marginBottom: 2}}>
               Crew
             </Typography>
+
+            <Box sx={{display: 'flex', alignItems: 'center', marginBottom: 2}}>
+              <TextField
+                variant="filled"
+                placeholder="Search..."
+                size="small"
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <Search/>
+                  ),
+                }}
+                sx={{
+                  flexGrow: 1,
+                  '& .MuiInputBase-root': {
+                    borderRadius: 12,
+                    pl: 1,
+                    paddingTop: '4px',
+                    paddingBottom: '4px'
+                  },
+                  '& .MuiFilledInput-input': {
+                    pl: 1,
+                    paddingTop: '4px',
+                    paddingBottom: '4px'
+                  },
+                  '& .MuiFilledInput-root::before': {
+                    borderBottom: 'none'
+                  },
+                  '& .MuiFilledInput-root:focus-within': {
+                    borderBottom: 'none'
+                  },
+                  '& .MuiFilledInput-root:hover:not(.Mui-disabled, .Mui-error):before': {
+                    borderBottom: 'none'
+                  },
+                  '& .MuiFilledInput-root::after': {
+                    borderBottom: 'none'
+                  }
+                }}
+              />
+              <IconButton size="small" sx={{marginLeft: 1}}>
+                <FilterList/>
+              </IconButton>
+            </Box>
+
+            {/* Tabs */}
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="fullWidth"
+              sx={{marginBottom: 2}}
+            >
+              <Tab label="ALL"/>
+              <Tab label="AVAILABLE"/>
+              <Tab label="REQUESTS"/>
+            </Tabs>
+
             <Droppable droppableId="0" isCombineEnabled>
               {(provided) => (
                 <div
@@ -286,14 +413,20 @@ function App() {
         </Drawer>
 
         {/* Main Content Box with a single vertical scroll */}
-        <Box sx={{ flexGrow: 1, transition: 'margin-left 0.3s ease-in-out', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <Box sx={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
-            <Grid container spacing={0} justifyContent="space-between" sx={{ margin: 0, width: "100%", flexGrow: 1 }}>
+        <Box sx={{flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', marginLeft: 0}}>
+          <Box sx={{
+            flexGrow: 1,
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            height: 'calc(100vh - 64px)'
+          }}>
+            <Grid container spacing={0} justifyContent="space-between" sx={{margin: 0, width: "100%", flexGrow: 1}}>
               {daysOfWeek.map((day, index) => (
-                <Grid item xs={2.4} key={index + 1} sx={{ padding: "0 4px", height: '100%' }}>
-                  <Card variant="outlined" sx={{ height: "100%" }}>
-                    <CustomCardHeader day={format(day, "EEEE, MMM d")} />
-                    <Box sx={{ flexGrow: 1, padding: "8px" }}>
+                <Grid item xs={2.4} key={index + 1} sx={{p: 0, height: '100%'}}>
+                  <Card variant="outlined" sx={{height: "100%"}}>
+                    <CustomCardHeader day={format(day, "EEEE, MMM d")}/>
+                    <Box sx={{flexGrow: 1, padding: "8px"}}>
                       <Droppable droppableId={`${index + 1}`} isCombineEnabled>
                         {(provided) => (
                           <div
