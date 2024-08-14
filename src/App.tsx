@@ -12,12 +12,20 @@ import {
   Chip,
   TextField,
   Tabs,
-  Tab,
-  InputAdornment
+  Tab
 } from "@mui/material";
 import {DragDropContext, Droppable, Draggable, DropResult} from "@hello-pangea/dnd";
 import {addDays, startOfWeek, format} from "date-fns";
-import {ExpandMore, WbSunny, Nightlight, Fullscreen, Close, Search, FilterList} from "@mui/icons-material";
+import {
+  ExpandMore,
+  WbSunny,
+  Nightlight,
+  Fullscreen,
+  Close,
+  Search,
+  FilterList,
+  MoreVert
+} from "@mui/icons-material";
 
 interface Item {
   id: string;
@@ -132,7 +140,7 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
             width: '100%',
           },
           '& .MuiAccordionSummary-content': {
-            justifyContent: 'center',
+            justifyContent: 'center'
           },
         }}
       />
@@ -155,22 +163,26 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
             <Typography variant="body2" color="primary" sx={{flexShrink: 0, marginRight: 1}}>
               Short Name
             </Typography>
-            <Chip
-              label={item.content}
-              size="small"
-              sx={{
-                fontSize: '0.75rem', // Smaller font size
-                height: '22px', // Adjust height
-                marginRight: 1,
-                '.MuiChip-label': {
-                  paddingLeft: '6px', // Adjust padding for a tighter fit
-                  paddingRight: '6px',
-                }
-              }}
-            />
-            <IconButton size="small" color="primary">
-              <Close fontSize="small"/>
-            </IconButton>
+            <Box sx={{display: 'flex'}}>
+              <Chip
+                label={item.content}
+                size="small"
+                sx={{
+                  fontSize: '0.75rem', // Smaller font size
+                  height: '22px', // Adjust height
+                  mt: 0.5,
+                  marginRight: 1,
+                  '.MuiChip-label': {
+                    paddingLeft: '6px', // Adjust padding for a tighter fit
+                    paddingRight: '6px',
+                  }
+                }}
+              />
+              <IconButton size="small" color="primary">
+                <Close fontSize="small"/>
+              </IconButton>
+            </Box>
+
           </Box>
         ))}
       </AccordionDetails>
@@ -181,24 +193,30 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
 function CustomCardHeader({day}: { day: string }) {
   return (
     <Box sx={{backgroundColor: '#fff', border: '1px solid #ddd'}}>
-      <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 0.5}}>
-        <Box sx={{display: 'flex', alignItems: 'center'}}>
-          <WbSunny fontSize="small" color="primary" sx={{fontSize: 14}}/>
-          <Typography variant="body2" sx={{ml: 1}}>
-            00:00
-          </Typography>
-          <Nightlight color="primary" fontSize="small" sx={{ml: 2, fontSize: 14}}/>
-          <Typography variant="body2" sx={{ml: 1}}>
-            00:00 00%
-          </Typography>
+      <Box sx={{p: 0.5}}>
+        <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <Box sx={{display: 'flex'}}>
+            <WbSunny fontSize="small" color="primary" sx={{fontSize: 14}}/>
+            <Typography variant="body2" sx={{ml: 1}}>
+              00:00
+            </Typography>
+          </Box>
+          <Box sx={{display: 'flex'}}>
+            <Nightlight color="primary" fontSize="small" sx={{ml: 2, fontSize: 14}}/>
+            <Typography variant="body2" sx={{ml: 1}}>
+              00:00 00%
+            </Typography>
+          </Box>
         </Box>
       </Box>
       <Box sx={{borderBottom: '1px solid #ddd', m: 0}}/>
       <Box sx={{display: 'flex', justifyContent: 'space-between', p: 0.5}}>
-        <Typography variant="body2" sx={{fontWeight: 'bold', fontSize: 12}}>
+        <Typography variant="body2" sx={{fontWeight: 'bold', fontSize: 12, mt: 0.8}}>
           {day}
         </Typography>
-        <Fullscreen fontSize="small"/>
+        <IconButton size="small">
+          <Fullscreen fontSize="small"/>
+        </IconButton>
       </Box>
     </Box>
   );
@@ -272,7 +290,7 @@ function App() {
     }
   }
 
-  const drawerWidth = 275; // Set the drawer width
+  const drawerWidth = 300;
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -306,7 +324,6 @@ function App() {
           >
             <IconButton
               size="small"
-              color="primary"
               onClick={() => setDrawerOpen(false)}
               sx={{
                 position: 'absolute',
@@ -370,12 +387,37 @@ function App() {
               indicatorColor="primary"
               textColor="primary"
               variant="fullWidth"
-              sx={{marginBottom: 2}}
+              sx={{
+                marginBottom: 2,
+                minHeight: '32px', // Adjust the height of the Tabs container
+              }}
             >
-              <Tab label="ALL"/>
-              <Tab label="AVAILABLE"/>
-              <Tab label="REQUESTS"/>
+              <Tab
+                label="ALL"
+                sx={{
+                  minHeight: '32px', // Adjust the height of the individual tab
+                  padding: '6px 12px', // Adjust the padding
+                  fontSize: '0.875rem', // Adjust the font size
+                }}
+              />
+              <Tab
+                label="AVAILABLE"
+                sx={{
+                  minHeight: '32px',
+                  padding: '6px 12px',
+                  fontSize: '0.875rem',
+                }}
+              />
+              <Tab
+                label="REQUESTS"
+                sx={{
+                  minHeight: '32px',
+                  padding: '6px 12px',
+                  fontSize: '0.875rem',
+                }}
+              />
             </Tabs>
+
 
             <Droppable droppableId="0" isCombineEnabled>
               {(provided) => (
@@ -440,7 +482,7 @@ function App() {
                                 index={idx}
                               >
                                 {(provided, snapshot) => (
-                                  <div
+                                  <Box
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
@@ -449,10 +491,34 @@ function App() {
                                       provided.draggableProps.style || {}
                                     )}
                                   >
-                                    <Typography variant="subtitle2">{item.content}</Typography>
-                                    <Typography variant="body2" color="textSecondary">{item.details}</Typography>
+                                    <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                      <Box>
+                                        <Typography variant="subtitle2">{item.content}</Typography>
+                                        <Typography variant="body2" color="textSecondary">{item.details}</Typography>
+                                      </Box>
+                                      <Box>
+                                        <Chip
+                                          label="SP"
+                                          color="success"
+                                          size="small"
+                                          sx={{
+                                            fontSize: '0.75rem', // Smaller font size
+                                            height: '22px', // Adjust height
+                                            mt: 0.5,
+                                            marginRight: 1,
+                                            '.MuiChip-label': {
+                                              paddingLeft: '6px', // Adjust padding for a tighter fit
+                                              paddingRight: '6px',
+                                            }
+                                          }}
+                                        />
+                                        <IconButton size="small">
+                                          <MoreVert sx={{fontSize: 18}}/>
+                                        </IconButton>
+                                      </Box>
+                                    </Box>
                                     {renderCombinedItems(item.combinedItems)}
-                                  </div>
+                                  </Box>
                                 )}
                               </Draggable>
                             ))}
