@@ -361,7 +361,8 @@ function App() {
                 width: drawerWidth,
                 boxSizing: 'border-box',
                 transition: 'width 0.3s ease',
-                mt: 9
+                mt: 9,
+                overflow: 'hidden', // Remove the scroll from the entire drawer
               },
             }}
           >
@@ -371,6 +372,8 @@ function App() {
                 height: "100%",
                 margin: 0,
                 position: 'relative',
+                display: 'flex',
+                flexDirection: 'column',
               }}
               role="presentation"
             >
@@ -470,38 +473,47 @@ function App() {
                 />
               </Tabs>
 
-              <Droppable droppableId="0" isCombineEnabled>
-                {(provided) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
-                    {state[0].map((item, index) => (
-                      <Draggable
-                        key={item.id}
-                        draggableId={item.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getCrewStyle(
-                              snapshot.isDragging,
-                              provided.draggableProps.style || {}
-                            )}
-                          >
-                            <Typography variant="subtitle2">{item.content}</Typography>
-                            <Typography variant="body2" color="textSecondary">{item.details}</Typography>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
+              {/* Scrollable Content */}
+              <Box
+                sx={{
+                  flexGrow: 0,
+                  overflowY: 'auto',
+                  height: '65%',
+                }}
+              >
+                <Droppable droppableId="0" isCombineEnabled>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                    >
+                      {state[0].map((item, index) => (
+                        <Draggable
+                          key={item.id}
+                          draggableId={item.id}
+                          index={index}
+                        >
+                          {(provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getCrewStyle(
+                                snapshot.isDragging,
+                                provided.draggableProps.style || {}
+                              )}
+                            >
+                              <Typography variant="subtitle2">{item.content}</Typography>
+                              <Typography variant="body2" color="textSecondary">{item.details}</Typography>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </Box>
             </Box>
           </Drawer>
 
