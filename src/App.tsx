@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Grid, Box, Typography, Card, CardHeader, Drawer, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
+import { Grid, Box, Typography, Card, Drawer, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { addDays, startOfWeek, format } from "date-fns";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ExpandMore, WbSunny, Nightlight, Fullscreen} from "@mui/icons-material";
 
 interface Item {
   id: string;
@@ -99,7 +99,7 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
     }}>
       <AccordionSummary
         expandIcon={
-          <ExpandMoreIcon
+          <ExpandMore
             sx={{
               color: 'primary.main',  // MUI blue color
             }}
@@ -130,6 +130,32 @@ const renderCombinedItems = (combinedItems?: Item[]) => {
     </Accordion>
   );
 };
+
+function CustomCardHeader({ day }: { day: string }) {
+  return (
+    <Box sx={{ backgroundColor: '#fff', border: '1px solid #ddd' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <WbSunny fontSize="small" color="primary" sx={{fontSize: 14}} />
+          <Typography variant="body2" sx={{ ml: 1 }}>
+            00:00
+          </Typography>
+          <Nightlight color="primary" fontSize="small" sx={{ ml: 2, fontSize: 14 }} />
+          <Typography variant="body2" sx={{ ml: 1 }}>
+            00:00 00%
+          </Typography>
+        </Box>
+      </Box>
+      <Box sx={{ borderBottom: '1px solid #ddd', m: 0 }} />
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 0.5 }}>
+        <Typography variant="body2" sx={{ fontWeight: 'bold', fontSize: 12 }}>
+          {day}
+        </Typography>
+        <Fullscreen fontSize="small" />
+      </Box>
+    </Box>
+  );
+}
 
 function App() {
   const [currentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
@@ -266,10 +292,7 @@ function App() {
               {daysOfWeek.map((day, index) => (
                 <Grid item xs={2.4} key={index + 1} sx={{ padding: "0 4px", height: '100%' }}>
                   <Card variant="outlined" sx={{ height: "100%" }}>
-                    <CardHeader
-                      title={format(day, "EEEE, MMM d")}
-                      sx={{ textAlign: "center", backgroundColor: "#f0f0f0", padding: "4px" }}
-                    />
+                    <CustomCardHeader day={format(day, "EEEE, MMM d")} />
                     <Box sx={{ flexGrow: 1, padding: "8px" }}>
                       <Droppable droppableId={`${index + 1}`} isCombineEnabled>
                         {(provided) => (
