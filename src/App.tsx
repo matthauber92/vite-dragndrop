@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Grid, Button, Box, Typography, Card, CardContent, CardHeader, Divider, Drawer } from "@mui/material";
+import { Grid, Box, Typography, Card, CardContent, CardHeader, Drawer, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { addDays, startOfWeek, format } from "date-fns";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 interface Item {
   id: string;
@@ -73,6 +74,47 @@ const getListStyle = (isDraggingOver: boolean): React.CSSProperties => ({
   overflowY: "visible",
 });
 
+const renderCombinedItems = (combinedItems?: Item[]) => {
+  if (!combinedItems || combinedItems.length === 0) return null;
+
+  return (
+    <Accordion   sx={{
+      boxShadow: 'none', // Removes the box shadow from the Accordion
+    }}>
+      <AccordionSummary
+        expandIcon={
+          <ExpandMoreIcon
+            sx={{
+              color: 'primary.main',  // MUI blue color
+            }}
+          />
+        }
+        aria-controls="panel1a-content"
+        id="panel1a-header"
+        sx={{
+          '& .MuiAccordionSummary-expandIconWrapper': {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+          },
+          '& .MuiAccordionSummary-content': {
+            justifyContent: 'center',
+          },
+        }}
+      />
+
+      <AccordionDetails>
+        {combinedItems.map((item) => (
+          <Box key={item.id} sx={{ marginBottom: 1 }}>
+            <Typography variant="body2">{item.content}</Typography>
+          </Box>
+        ))}
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
 function App() {
   const [currentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [state, setState] = useState<Item[][]>(initialData);
@@ -140,19 +182,6 @@ function App() {
     }
   }
 
-  const renderCombinedItems = (combinedItems?: Item[]) => {
-    if (!combinedItems || combinedItems.length === 0) return null;
-    return (
-      <Box sx={{ paddingLeft: 2 }}>
-        {combinedItems.map((item) => (
-          <Box key={item.id} sx={{ marginBottom: 1 }}>
-            <Typography variant="body2" sx={{ marginBottom: 1 }}>{item.content}</Typography>
-          </Box>
-        ))}
-      </Box>
-    );
-  };
-
   const drawerWidth = 300; // Set the drawer width
 
   return (
@@ -204,20 +233,6 @@ function App() {
                         >
                           <Typography variant="subtitle2">{item.content}</Typography>
                           <Typography variant="body2" color="textSecondary">{item.details}</Typography>
-                          <Divider sx={{ marginY: 1 }} />
-                          <Button
-                            variant="text"
-                            size="small"
-                            onClick={() => {
-                              const newState = [...state];
-                              newState[0].splice(index, 1);
-                              setState(
-                                newState.filter((group) => group.length)
-                              );
-                            }}
-                          >
-                            delete
-                          </Button>
                         </div>
                       )}
                     </Draggable>
@@ -266,21 +281,7 @@ function App() {
                                   >
                                     <Typography variant="subtitle2">{item.content}</Typography>
                                     <Typography variant="body2" color="textSecondary">{item.details}</Typography>
-                                    <Divider sx={{ marginY: 1 }} />
                                     {renderCombinedItems(item.combinedItems)}
-                                    <Button
-                                      variant="text"
-                                      size="small"
-                                      onClick={() => {
-                                        const newState = [...state];
-                                        newState[index + 1].splice(idx, 1);
-                                        setState(
-                                          newState.filter((group) => group.length)
-                                        );
-                                      }}
-                                    >
-                                      delete
-                                    </Button>
                                   </div>
                                 )}
                               </Draggable>
