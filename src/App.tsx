@@ -71,8 +71,7 @@ const getListStyle = (isDraggingOver: boolean): React.CSSProperties => ({
   padding: grid,
   border: "1px solid #ddd",
   borderRadius: "4px",
-  maxHeight: "100%",
-  overflowY: "auto",
+  overflowY: "visible",
 });
 
 function App() {
@@ -167,11 +166,11 @@ function App() {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Box sx={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <Box sx={{ display: 'flex', height: '98vh', width: '98vw', overflow: 'hidden' }}>
         <Drawer
           variant="persistent"
           anchor="left"
-          open
+          open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           sx={{
             width: drawerWidth,
@@ -239,8 +238,9 @@ function App() {
           </Box>
         </Drawer>
 
-        <Box sx={{ flexGrow: 1, transition: 'margin-left 0.3s ease-in-out', display: 'flex', flexDirection: 'column', width: '100%' }}>
-          <Box sx={{ textAlign: "center", marginBottom: 1, flexShrink: 0 }}>
+        {/* Main Content Box with a single vertical scroll */}
+        <Box sx={{ flexGrow: 1, transition: 'margin-left 0.3s ease-in-out', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <Box sx={{ textAlign: "center", marginBottom: 1, flexShrink: 0, paddingTop: '8px' }}>
             <Button variant="contained" onClick={handlePrevWeek}>
               Previous Week
             </Button>
@@ -255,68 +255,70 @@ function App() {
             </IconButton>
           </Box>
 
-          <Grid container spacing={0} justifyContent="space-between" sx={{ height: "100%", margin: 0, width: "100%" }}>
-            {daysOfWeek.map((day, index) => (
-              <Grid item xs={2.4} key={index + 1} sx={{ padding: "0 4px", height: '100%' }}>
-                <Card variant="outlined" sx={{ height: "100%" }}>
-                  <CardHeader
-                    title={format(day, "EEEE, MMM d")}
-                    sx={{ textAlign: "center", backgroundColor: "#f0f0f0", padding: "4px" }}
-                  />
-                  <CardContent sx={{ flexGrow: 1, overflowY: "auto", maxHeight: "calc(100vh - 150px)", padding: "8px" }}>
-                    <Droppable droppableId={`${index + 1}`} isCombineEnabled>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          style={getListStyle(snapshot.isDraggingOver)}
-                          {...provided.droppableProps}
-                        >
-                          {state[index + 1].map((item, idx) => (
-                            <Draggable
-                              key={item.id}
-                              draggableId={item.id}
-                              index={idx}
-                            >
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  style={getItemStyle(
-                                    snapshot.isDragging,
-                                    provided.draggableProps.style || {}
-                                  )}
-                                >
-                                  <Typography variant="subtitle2">{item.content}</Typography>
-                                  <Typography variant="body2" color="textSecondary">{item.details}</Typography>
-                                  <Divider sx={{ marginY: 1 }} />
-                                  {renderCombinedItems(item.combinedItems)}
-                                  <Button
-                                    variant="text"
-                                    size="small"
-                                    onClick={() => {
-                                      const newState = [...state];
-                                      newState[index + 1].splice(idx, 1);
-                                      setState(
-                                        newState.filter((group) => group.length)
-                                      );
-                                    }}
+          <Box sx={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
+            <Grid container spacing={0} justifyContent="space-between" sx={{ margin: 0, width: "100%", flexGrow: 1 }}>
+              {daysOfWeek.map((day, index) => (
+                <Grid item xs={2.4} key={index + 1} sx={{ padding: "0 4px", height: '100%' }}>
+                  <Card variant="outlined" sx={{ height: "100%" }}>
+                    <CardHeader
+                      title={format(day, "EEEE, MMM d")}
+                      sx={{ textAlign: "center", backgroundColor: "#f0f0f0", padding: "4px" }}
+                    />
+                    <CardContent sx={{ flexGrow: 1, padding: "8px" }}>
+                      <Droppable droppableId={`${index + 1}`} isCombineEnabled>
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            style={getListStyle(snapshot.isDraggingOver)}
+                            {...provided.droppableProps}
+                          >
+                            {state[index + 1].map((item, idx) => (
+                              <Draggable
+                                key={item.id}
+                                draggableId={item.id}
+                                index={idx}
+                              >
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    style={getItemStyle(
+                                      snapshot.isDragging,
+                                      provided.draggableProps.style || {}
+                                    )}
                                   >
-                                    delete
-                                  </Button>
-                                </div>
-                              )}
-                            </Draggable>
-                          ))}
-                          {provided.placeholder}
-                        </div>
-                      )}
-                    </Droppable>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                                    <Typography variant="subtitle2">{item.content}</Typography>
+                                    <Typography variant="body2" color="textSecondary">{item.details}</Typography>
+                                    <Divider sx={{ marginY: 1 }} />
+                                    {renderCombinedItems(item.combinedItems)}
+                                    <Button
+                                      variant="text"
+                                      size="small"
+                                      onClick={() => {
+                                        const newState = [...state];
+                                        newState[index + 1].splice(idx, 1);
+                                        setState(
+                                          newState.filter((group) => group.length)
+                                        );
+                                      }}
+                                    >
+                                      delete
+                                    </Button>
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
         </Box>
       </Box>
     </DragDropContext>
