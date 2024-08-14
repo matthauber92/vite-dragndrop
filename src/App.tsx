@@ -12,7 +12,9 @@ import {
   Chip,
   TextField,
   Tabs,
-  Tab
+  Tab,
+  AppBar,
+  Toolbar
 } from "@mui/material";
 import {DragDropContext, Droppable, Draggable, DropResult} from "@hello-pangea/dnd";
 import {addDays, startOfWeek, format} from "date-fns";
@@ -24,7 +26,8 @@ import {
   Close,
   Search,
   FilterList,
-  MoreVert
+  MoreVert,
+  Help
 } from "@mui/icons-material";
 
 interface Item {
@@ -297,244 +300,282 @@ function App() {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Box sx={{display: 'flex', height: '98vh', width: '98vw', overflow: 'hidden', margin: 0}}>
-        <Drawer
-          variant="persistent"
-          anchor="left"
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              boxSizing: 'border-box',
-            },
-          }}
-        >
-          <Box
-            sx={{
-              padding: 2,
-              height: "100%",
-              margin: 0,
-              position: 'relative',
-            }}
-            role="presentation"
-          >
-            <IconButton
-              size="small"
-              onClick={() => setDrawerOpen(false)}
-              sx={{
-                position: 'absolute',
-                top: 8,
-                right: 8,
-              }}
-            >
-              <Close fontSize="small"/>
-            </IconButton>
-            <Typography variant="h6" sx={{marginBottom: 2}}>
-              Crew
-            </Typography>
+    <>
+      <AppBar color="default">
+        <Toolbar>
+          <Grid container>
+            <Grid item md={4}>
+              <Box display={'flex'}>
+                <Typography variant="h6" fontWeight="bold">
+                  Crew Board
+                </Typography>
+              </Box>
+            </Grid>
 
-            <Box sx={{display: 'flex', alignItems: 'center', marginBottom: 2}}>
-              <TextField
-                variant="filled"
-                placeholder="Search..."
-                size="small"
-                fullWidth
-                InputProps={{
-                  startAdornment: (
-                    <Search/>
-                  ),
-                }}
-                sx={{
-                  flexGrow: 1,
-                  '& .MuiInputBase-root': {
-                    borderRadius: 12,
-                    pl: 1,
-                    paddingTop: '4px',
-                    paddingBottom: '4px'
-                  },
-                  '& .MuiFilledInput-input': {
-                    pl: 1,
-                    paddingTop: '4px',
-                    paddingBottom: '4px'
-                  },
-                  '& .MuiFilledInput-root::before': {
-                    borderBottom: 'none'
-                  },
-                  '& .MuiFilledInput-root:focus-within': {
-                    borderBottom: 'none'
-                  },
-                  '& .MuiFilledInput-root:hover:not(.Mui-disabled, .Mui-error):before': {
-                    borderBottom: 'none'
-                  },
-                  '& .MuiFilledInput-root::after': {
-                    borderBottom: 'none'
-                  }
-                }}
-              />
-              <IconButton size="small" sx={{marginLeft: 1}}>
-                <FilterList/>
+            <Grid item md={4} textAlign={'center'}>
+              <Typography variant="h6" fontWeight="bold">
+                00:00 - 00:00
+              </Typography>
+            </Grid>
+
+            <Grid item md={4}>
+              <IconButton sx={{float: 'right'}} onClick={() => setDrawerOpen(true)}>
+                <Help/>
               </IconButton>
-            </Box>
-
-            {/* Tabs */}
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
+            </Grid>
+          </Grid>
+        </Toolbar>
+      </AppBar>
+      <Toolbar/> {/* This helps push the Drawer and content below the AppBar */}
+      <DragDropContext onDragEnd={onDragEnd}>
+        <Box sx={{display: 'flex', height: 'calc(100vh - 64px)', width: '100vw', overflow: 'hidden', marginTop: 0}}>
+          <Drawer
+            variant="persistent"
+            anchor="left"
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            sx={{
+              width: drawerOpen ? drawerWidth : 0,
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: drawerWidth,
+                boxSizing: 'border-box',
+                transition: 'width 0.3s ease',
+                mt: 9
+              },
+            }}
+          >
+            <Box
               sx={{
-                marginBottom: 2,
-                minHeight: '32px', // Adjust the height of the Tabs container
+                padding: 2,
+                height: "100%",
+                margin: 0,
+                position: 'relative',
               }}
+              role="presentation"
             >
-              <Tab
-                label="ALL"
+              <IconButton
+                size="small"
+                onClick={() => setDrawerOpen(false)}
                 sx={{
-                  minHeight: '32px', // Adjust the height of the individual tab
-                  padding: '6px 12px', // Adjust the padding
-                  fontSize: '0.875rem', // Adjust the font size
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
                 }}
-              />
-              <Tab
-                label="AVAILABLE"
+              >
+                <Close fontSize="small"/>
+              </IconButton>
+              <Typography variant="h6" sx={{marginBottom: 2}}>
+                Crew
+              </Typography>
+
+              <Box sx={{display: 'flex', alignItems: 'center', marginBottom: 2}}>
+                <TextField
+                  variant="filled"
+                  placeholder="Search..."
+                  size="small"
+                  fullWidth
+                  InputProps={{
+                    startAdornment: (
+                      <Search/>
+                    ),
+                  }}
+                  sx={{
+                    flexGrow: 1,
+                    '& .MuiInputBase-root': {
+                      borderRadius: 12,
+                      pl: 1,
+                      paddingTop: '4px',
+                      paddingBottom: '4px'
+                    },
+                    '& .MuiFilledInput-input': {
+                      pl: 1,
+                      paddingTop: '4px',
+                      paddingBottom: '4px'
+                    },
+                    '& .MuiFilledInput-root::before': {
+                      borderBottom: 'none'
+                    },
+                    '& .MuiFilledInput-root:focus-within': {
+                      borderBottom: 'none'
+                    },
+                    '& .MuiFilledInput-root:hover:not(.Mui-disabled, .Mui-error):before': {
+                      borderBottom: 'none'
+                    },
+                    '& .MuiFilledInput-root::after': {
+                      borderBottom: 'none'
+                    }
+                  }}
+                />
+                <IconButton size="small" sx={{marginLeft: 1}}>
+                  <FilterList/>
+                </IconButton>
+              </Box>
+
+              {/* Tabs */}
+              <Tabs
+                value={tabValue}
+                onChange={handleTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+                variant="fullWidth"
                 sx={{
-                  minHeight: '32px',
-                  padding: '6px 12px',
-                  fontSize: '0.875rem',
+                  marginBottom: 2,
+                  minHeight: '32px', // Adjust the height of the Tabs container
                 }}
-              />
-              <Tab
-                label="REQUESTS"
-                sx={{
-                  minHeight: '32px',
-                  padding: '6px 12px',
-                  fontSize: '0.875rem',
-                }}
-              />
-            </Tabs>
+              >
+                <Tab
+                  label="ALL"
+                  sx={{
+                    minHeight: '32px', // Adjust the height of the individual tab
+                    padding: '6px 12px', // Adjust the padding
+                    fontSize: '0.875rem', // Adjust the font size
+                  }}
+                />
+                <Tab
+                  label="AVAILABLE"
+                  sx={{
+                    minHeight: '32px',
+                    padding: '6px 12px',
+                    fontSize: '0.875rem',
+                  }}
+                />
+                <Tab
+                  label="REQUESTS"
+                  sx={{
+                    minHeight: '32px',
+                    padding: '6px 12px',
+                    fontSize: '0.875rem',
+                  }}
+                />
+              </Tabs>
 
 
-            <Droppable droppableId="0" isCombineEnabled>
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  {state[0].map((item, index) => (
-                    <Draggable
-                      key={item.id}
-                      draggableId={item.id}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={getCrewStyle(
-                            snapshot.isDragging,
-                            provided.draggableProps.style || {}
-                          )}
-                        >
-                          <Typography variant="subtitle2">{item.content}</Typography>
-                          <Typography variant="body2" color="textSecondary">{item.details}</Typography>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </Box>
-        </Drawer>
-
-        {/* Main Content Box with a single vertical scroll */}
-        <Box sx={{flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', marginLeft: 0}}>
-          <Box sx={{
-            flexGrow: 1,
-            overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            height: 'calc(100vh - 64px)'
-          }}>
-            <Grid container spacing={0} justifyContent="space-between" sx={{margin: 0, width: "100%", flexGrow: 1}}>
-              {daysOfWeek.map((day, index) => (
-                <Grid item xs={2.4} key={index + 1} sx={{p: 0, height: '100%'}}>
-                  <Card variant="outlined" sx={{height: "100%"}}>
-                    <CustomCardHeader day={format(day, "EEEE, MMM d")}/>
-                    <Box sx={{flexGrow: 1, padding: "8px"}}>
-                      <Droppable droppableId={`${index + 1}`} isCombineEnabled>
-                        {(provided) => (
+              <Droppable droppableId="0" isCombineEnabled>
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                  >
+                    {state[0].map((item, index) => (
+                      <Draggable
+                        key={item.id}
+                        draggableId={item.id}
+                        index={index}
+                      >
+                        {(provided, snapshot) => (
                           <div
                             ref={provided.innerRef}
-                            {...provided.droppableProps}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            style={getCrewStyle(
+                              snapshot.isDragging,
+                              provided.draggableProps.style || {}
+                            )}
                           >
-                            {state[index + 1].map((item, idx) => (
-                              <Draggable
-                                key={item.id}
-                                draggableId={item.id}
-                                index={idx}
-                              >
-                                {(provided, snapshot) => (
-                                  <Box
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={getItemStyle(
-                                      snapshot.isDragging,
-                                      provided.draggableProps.style || {}
-                                    )}
-                                  >
-                                    <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-                                      <Box>
-                                        <Typography variant="subtitle2">{item.content}</Typography>
-                                        <Typography variant="body2" color="textSecondary">{item.details}</Typography>
-                                      </Box>
-                                      <Box>
-                                        <Chip
-                                          label="SP"
-                                          color="success"
-                                          size="small"
-                                          sx={{
-                                            fontSize: '0.75rem', // Smaller font size
-                                            height: '22px', // Adjust height
-                                            mt: 0.5,
-                                            marginRight: 1,
-                                            '.MuiChip-label': {
-                                              paddingLeft: '6px', // Adjust padding for a tighter fit
-                                              paddingRight: '6px',
-                                            }
-                                          }}
-                                        />
-                                        <IconButton size="small">
-                                          <MoreVert sx={{fontSize: 18}}/>
-                                        </IconButton>
-                                      </Box>
-                                    </Box>
-                                    {renderCombinedItems(item.combinedItems)}
-                                  </Box>
-                                )}
-                              </Draggable>
-                            ))}
-                            {provided.placeholder}
+                            <Typography variant="subtitle2">{item.content}</Typography>
+                            <Typography variant="body2" color="textSecondary">{item.details}</Typography>
                           </div>
                         )}
-                      </Droppable>
-                    </Box>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </Box>
+          </Drawer>
+
+          {/* Main Content Box */}
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              transition: 'width 0.3s ease',
+            }}
+          >
+            <Box sx={{
+              flexGrow: 1,
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              height: 'calc(100vh - 64px)'
+            }}>
+              <Grid container spacing={0} justifyContent="space-between" sx={{margin: 0, width: "100%", flexGrow: 1}}>
+                {daysOfWeek.map((day, index) => (
+                  <Grid item xs={2.4} key={index + 1} sx={{p: 0, height: '100%'}}>
+                    <Card variant="outlined" sx={{height: "100%"}}>
+                      <CustomCardHeader day={format(day, "EEEE, MMM d")}/>
+                      <Box sx={{flexGrow: 1, padding: "8px"}}>
+                        <Droppable droppableId={`${index + 1}`} isCombineEnabled>
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.droppableProps}
+                            >
+                              {state[index + 1].map((item, idx) => (
+                                <Draggable
+                                  key={item.id}
+                                  draggableId={item.id}
+                                  index={idx}
+                                >
+                                  {(provided, snapshot) => (
+                                    <Box
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      style={getItemStyle(
+                                        snapshot.isDragging,
+                                        provided.draggableProps.style || {}
+                                      )}
+                                    >
+                                      <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+                                        <Box>
+                                          <Typography variant="subtitle2">{item.content}</Typography>
+                                          <Typography variant="body2" color="textSecondary">{item.details}</Typography>
+                                        </Box>
+                                        <Box>
+                                          <Chip
+                                            label="SP"
+                                            color="success"
+                                            size="small"
+                                            sx={{
+                                              fontSize: '0.75rem', // Smaller font size
+                                              height: '22px', // Adjust height
+                                              mt: 0.5,
+                                              marginRight: 1,
+                                              '.MuiChip-label': {
+                                                paddingLeft: '6px', // Adjust padding for a tighter fit
+                                                paddingRight: '6px',
+                                              }
+                                            }}
+                                          />
+                                          <IconButton size="small">
+                                            <MoreVert sx={{fontSize: 18}}/>
+                                          </IconButton>
+                                        </Box>
+                                      </Box>
+                                      {renderCombinedItems(item.combinedItems)}
+                                    </Box>
+                                  )}
+                                </Draggable>
+                              ))}
+                              {provided.placeholder}
+                            </div>
+                          )}
+                        </Droppable>
+                      </Box>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </DragDropContext>
+      </DragDropContext>
+    </>
   );
 }
 
