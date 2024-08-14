@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Grid, Button, Box, Typography, Card, CardContent, CardHeader, Divider, Drawer, IconButton } from "@mui/material";
+import { Grid, Button, Box, Typography, Card, CardContent, CardHeader, Divider, Drawer } from "@mui/material";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { addDays, startOfWeek, format } from "date-fns";
-import MenuIcon from '@mui/icons-material/Menu';
 
 interface Item {
   id: string;
@@ -75,19 +74,11 @@ const getListStyle = (isDraggingOver: boolean): React.CSSProperties => ({
 });
 
 function App() {
-  const [currentWeekStart, setCurrentWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
+  const [currentWeekStart] = useState<Date>(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [state, setState] = useState<Item[][]>(initialData);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [, setDrawerOpen] = useState<boolean>(false);
 
   const daysOfWeek = Array.from({ length: 5 }, (_, i) => addDays(currentWeekStart, i));
-
-  const handlePrevWeek = () => {
-    setCurrentWeekStart(prev => addDays(prev, -7));
-  };
-
-  const handleNextWeek = () => {
-    setCurrentWeekStart(prev => addDays(prev, 7));
-  };
 
   function onDragEnd(result: DropResult) {
     const { source, destination, combine } = result;
@@ -170,7 +161,7 @@ function App() {
         <Drawer
           variant="persistent"
           anchor="left"
-          open={drawerOpen}
+          open
           onClose={() => setDrawerOpen(false)}
           sx={{
             width: drawerWidth,
@@ -240,21 +231,6 @@ function App() {
 
         {/* Main Content Box with a single vertical scroll */}
         <Box sx={{ flexGrow: 1, transition: 'margin-left 0.3s ease-in-out', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <Box sx={{ textAlign: "center", marginBottom: 1, flexShrink: 0, paddingTop: '8px' }}>
-            <Button variant="contained" onClick={handlePrevWeek}>
-              Previous Week
-            </Button>
-            <Button variant="contained" onClick={handleNextWeek} sx={{ marginLeft: "10px" }}>
-              Next Week
-            </Button>
-            <IconButton
-              onClick={() => setDrawerOpen(!drawerOpen)}
-              sx={{ marginLeft: "10px" }}
-            >
-              <MenuIcon />
-            </IconButton>
-          </Box>
-
           <Box sx={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', height: 'calc(100vh - 64px)' }}>
             <Grid container spacing={0} justifyContent="space-between" sx={{ margin: 0, width: "100%", flexGrow: 1 }}>
               {daysOfWeek.map((day, index) => (
