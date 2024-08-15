@@ -7,21 +7,15 @@ import {
   Drawer,
   IconButton,
   Chip,
-  TextField,
-  Tabs,
-  Tab
 } from "@mui/material";
 import {DragDropContext, Droppable, Draggable, DropResult} from "@hello-pangea/dnd";
 import {addDays, startOfWeek, format} from "date-fns";
 import {
-  Close,
-  Search,
-  FilterList,
-  MoreVert,
+  MoreVert
 } from "@mui/icons-material";
 import {Item} from "./interfaces.ts";
 import {getCrewStyle, getItems, getItemStyle, move, reorder} from "./utils";
-import {BoardHeader, CardAccordion, CardHeader} from "./components";
+import {BoardHeader, CardAccordion, CardHeader, DrawerHeader} from "./components";
 
 const initialData = [
   getItems(50), // Crew with 50 items
@@ -36,7 +30,7 @@ function App() {
   const [currentWeekStart] = useState<Date>(startOfWeek(new Date(), {weekStartsOn: 1}));
   const [state, setState] = useState<Item[][]>(initialData);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState<number>(0);
 
   const daysOfWeek = Array.from({length: 5}, (_, i) => addDays(currentWeekStart, i));
 
@@ -139,102 +133,8 @@ function App() {
               }}
               role="presentation"
             >
-              <IconButton
-                size="small"
-                onClick={() => setDrawerOpen(false)}
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                }}
-              >
-                <Close fontSize="small"/>
-              </IconButton>
-              <Typography variant="h6" sx={{marginBottom: 2}}>
-                Crew
-              </Typography>
-
-              <Box sx={{display: 'flex', alignItems: 'center', marginBottom: 2}}>
-                <TextField
-                  variant="filled"
-                  placeholder="Search..."
-                  size="small"
-                  fullWidth
-                  InputProps={{
-                    startAdornment: (
-                      <Search/>
-                    ),
-                  }}
-                  sx={{
-                    flexGrow: 1,
-                    '& .MuiInputBase-root': {
-                      borderRadius: 12,
-                      pl: 1,
-                      paddingTop: '4px',
-                      paddingBottom: '4px'
-                    },
-                    '& .MuiFilledInput-input': {
-                      pl: 1,
-                      paddingTop: '4px',
-                      paddingBottom: '4px'
-                    },
-                    '& .MuiFilledInput-root::before': {
-                      borderBottom: 'none'
-                    },
-                    '& .MuiFilledInput-root:focus-within': {
-                      borderBottom: 'none'
-                    },
-                    '& .MuiFilledInput-root:hover:not(.Mui-disabled, .Mui-error):before': {
-                      borderBottom: 'none'
-                    },
-                    '& .MuiFilledInput-root::after': {
-                      borderBottom: 'none'
-                    }
-                  }}
-                />
-                <IconButton size="small" sx={{marginLeft: 1}}>
-                  <FilterList/>
-                </IconButton>
-              </Box>
-
-              {/* Tabs */}
-              <Tabs
-                value={tabValue}
-                onChange={handleTabChange}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="fullWidth"
-                sx={{
-                  marginBottom: 2,
-                  minHeight: '32px',
-                }}
-              >
-                <Tab
-                  label="ALL"
-                  sx={{
-                    minHeight: '32px',
-                    padding: '6px 12px',
-                    fontSize: '0.875rem',
-                  }}
-                />
-                <Tab
-                  label="AVAILABLE"
-                  sx={{
-                    minHeight: '32px',
-                    padding: '6px 12px',
-                    fontSize: '0.875rem',
-                  }}
-                />
-                <Tab
-                  label="REQUESTS"
-                  sx={{
-                    minHeight: '32px',
-                    padding: '6px 12px',
-                    fontSize: '0.875rem',
-                  }}
-                />
-              </Tabs>
-
+              <DrawerHeader handleDrawer={() => setDrawerOpen(false)} handleTabChange={handleTabChange}
+                            tabValue={tabValue}/>
               {/* Scrollable Content */}
               <Box
                 sx={{

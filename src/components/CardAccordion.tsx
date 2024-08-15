@@ -76,7 +76,6 @@ const CardAccordion = ({items}: { items?: Item[] }) => {
                 <Close fontSize="small"/>
               </IconButton>
             </Box>
-
           </Box>
         ))}
       </AccordionDetails>
