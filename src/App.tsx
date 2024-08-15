@@ -5,66 +5,26 @@ import {
   Typography,
   Card,
   Drawer,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   IconButton,
   Chip,
   TextField,
   Tabs,
-  Tab,
-  AppBar,
-  Toolbar
+  Tab
 } from "@mui/material";
 import {DragDropContext, Droppable, Draggable, DropResult} from "@hello-pangea/dnd";
 import {addDays, startOfWeek, format} from "date-fns";
 import {
-  ExpandMore,
-  WbSunny,
-  Nightlight,
-  Fullscreen,
   Close,
   Search,
   FilterList,
   MoreVert,
-  Help, Menu
 } from "@mui/icons-material";
+import {Item} from "./interfaces.ts";
+import {getCrewStyle, getItems, getItemStyle, move, reorder} from "./utils";
+import {BoardHeader, CardAccordion, CardHeader} from "./components";
 
-// Apply global styles to remove window scroll bars
-const styles = {
-  html: {
-    overflow: 'hidden',
-    height: '100%',
-  },
-  body: {
-    overflow: 'hidden',
-    height: '100%',
-    margin: 0,
-    padding: 0,
-  },
-};
-
-Object.assign(document.documentElement.style, styles.html);
-Object.assign(document.body.style, styles.body);
-
-interface Item {
-  id: string;
-  content: string;
-  details?: string;
-  combinedItems?: Item[];
-}
-
-// Generate mock data for items
-const getItems = (count: number, offset = 0): Item[] =>
-  Array.from({length: count}, (_v, k) => k).map((k) => ({
-    id: `item-${k + offset}-${new Date().getTime()}`,
-    content: `Sortie ${k + offset}`,
-    details: `Details for Sortie ${k + offset}`,
-  }));
-
-// Initial data setup for each column with much more mock data
 const initialData = [
-  getItems(50), // Backlog with 50 items
+  getItems(50), // Crew with 50 items
   getItems(50, 50), // Monday with 50 items
   getItems(50, 100), // Tuesday with 50 items
   getItems(50, 150), // Wednesday with 50 items
@@ -72,182 +32,11 @@ const initialData = [
   getItems(50, 250), // Friday with 50 items
 ];
 
-const reorder = (list: Item[], startIndex: number, endIndex: number): Item[] => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
-
-const move = (
-  source: Item[],
-  destination: Item[],
-  droppableSource: { index: number; droppableId: string },
-  droppableDestination: { index: number; droppableId: string }
-): { [key: string]: Item[] } => {
-  const sourceClone = Array.from(source);
-  const destClone = Array.from(destination);
-  const [removed] = sourceClone.splice(droppableSource.index, 1);
-  destClone.splice(droppableDestination.index, 0, removed);
-
-  const result: { [key: string]: Item[] } = {};
-  result[droppableSource.droppableId] = sourceClone;
-  result[droppableDestination.droppableId] = destClone;
-
-  return result;
-};
-
-const grid = 8;
-
-const getItemStyle = (
-  isDragging: boolean,
-  draggableStyle: React.CSSProperties = {}
-): React.CSSProperties => ({
-  userSelect: "none",
-  padding: grid,
-  margin: `0 0 ${grid}px 0`,
-  background: isDragging ? "#e0f7fa" : "#fff",
-  border: "1px solid #ddd",
-  borderTopWidth: "2px",
-  borderTopColor: "#1876d2",
-  borderRadius: "2px",
-  borderBottom: "4px solid #ddd",
-  ...draggableStyle,
-});
-
-const getCrewStyle = (
-  isDragging: boolean,
-  draggableStyle: React.CSSProperties = {}
-): React.CSSProperties => ({
-  userSelect: "none",
-  padding: grid,
-  margin: `0 0 ${grid}px 0`,
-  background: isDragging ? "#e0f7fa" : "#fff",
-  border: "1px solid #ddd",
-  borderRadius: "2px",
-  borderBottom: "4px solid #ddd",
-  ...draggableStyle,
-});
-
-const renderCombinedItems = (combinedItems?: Item[]) => {
-  if (!combinedItems || combinedItems.length === 0) return null;
-
-  return (
-    <Accordion
-      sx={{
-        '& .MuiButtonBase-root.MuiAccordionSummary-root.MuiAccordionSummary-gutters': {
-          minHeight: '20px'
-        },
-        boxShadow: 'none',
-        height: '50%',
-        position: 'inherit'
-      }}
-    >
-      <AccordionSummary
-        expandIcon={
-          <ExpandMore
-            sx={{
-              color: 'primary.main',  // MUI blue color
-            }}
-          />
-        }
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-        sx={{
-          '& .MuiAccordionSummary-expandIconWrapper': {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: '100%',
-          },
-          '& .MuiAccordionSummary-content': {
-            justifyContent: 'center'
-          },
-        }}
-      />
-
-      <AccordionDetails sx={{p: 0}}>
-        {combinedItems.map((item) => (
-          <Box
-            key={item.id}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              p: 0.5,
-              m: 0.5,
-              border: "1.5px solid #ddd",
-              borderRadius: "2px",
-              borderBottom: "2.5px solid #ddd",
-            }}
-          >
-            <Typography variant="body2" color="primary" sx={{flexShrink: 0, marginRight: 1}}>
-              Short Name
-            </Typography>
-            <Box sx={{display: 'flex'}}>
-              <Chip
-                label={item.content}
-                size="small"
-                sx={{
-                  fontSize: '0.75rem', // Smaller font size
-                  height: '22px', // Adjust height
-                  mt: 0.5,
-                  marginRight: 1,
-                  '.MuiChip-label': {
-                    paddingLeft: '6px', // Adjust padding for a tighter fit
-                    paddingRight: '6px',
-                  }
-                }}
-              />
-              <IconButton size="small" color="primary">
-                <Close fontSize="small"/>
-              </IconButton>
-            </Box>
-
-          </Box>
-        ))}
-      </AccordionDetails>
-    </Accordion>
-  );
-};
-
-function CustomCardHeader({day}: { day: string }) {
-  return (
-    <Box sx={{backgroundColor: '#fff', border: '1px solid #ddd'}}>
-      <Box sx={{p: 0.5}}>
-        <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-          <Box sx={{display: 'flex'}}>
-            <WbSunny fontSize="small" color="primary" sx={{fontSize: 14}}/>
-            <Typography variant="body2" sx={{ml: 1}}>
-              00:00
-            </Typography>
-          </Box>
-          <Box sx={{display: 'flex'}}>
-            <Nightlight color="primary" fontSize="small" sx={{ml: 2, fontSize: 14}}/>
-            <Typography variant="body2" sx={{ml: 1}}>
-              00:00 00%
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-      <Box sx={{borderBottom: '1px solid #ddd', m: 0}}/>
-      <Box sx={{display: 'flex', justifyContent: 'space-between', p: 0.5}}>
-        <Typography variant="body2" sx={{fontWeight: 'bold', fontSize: 12, mt: 0.8}}>
-          {day}
-        </Typography>
-        <IconButton size="small">
-          <Fullscreen fontSize="small"/>
-        </IconButton>
-      </Box>
-    </Box>
-  );
-}
-
 function App() {
   const [currentWeekStart] = useState<Date>(startOfWeek(new Date(), {weekStartsOn: 1}));
   const [state, setState] = useState<Item[][]>(initialData);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(true);
-  const [tabValue, setTabValue] = useState(0); // For tab selection
+  const [tabValue, setTabValue] = useState(0);
 
   const daysOfWeek = Array.from({length: 5}, (_, i) => addDays(currentWeekStart, i));
 
@@ -319,35 +108,7 @@ function App() {
 
   return (
     <>
-      <AppBar color="default">
-        <Toolbar>
-          <Grid container>
-            <Grid item md={4}>
-              <Box display={'flex'}>
-                <IconButton sx={{mr: 1}} onClick={() => drawerOpen ? setDrawerOpen(false) : setDrawerOpen(true)}>
-                  <Menu/>
-                </IconButton>
-                <Typography variant="h6" fontWeight="bold" sx={{mt: 0.5}}>
-                  Crew Board
-                </Typography>
-              </Box>
-            </Grid>
-
-            <Grid item md={4} textAlign={'center'}>
-              <Typography variant="h6" fontWeight="bold">
-                00:00 - 00:00
-              </Typography>
-            </Grid>
-
-            <Grid item md={4}>
-              <IconButton sx={{float: 'right'}}>
-                <Help/>
-              </IconButton>
-            </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
-      <Toolbar/> {/* This helps push the Drawer and content below the AppBar */}
+      <BoardHeader handleDrawer={() => drawerOpen ? setDrawerOpen(false) : setDrawerOpen(true)}/>
       <DragDropContext onDragEnd={onDragEnd}>
         <Box sx={{display: 'flex', height: 'calc(100vh - 64px)', width: '100vw', overflow: 'hidden', marginTop: 0}}>
           <Drawer
@@ -363,7 +124,7 @@ function App() {
                 boxSizing: 'border-box',
                 transition: 'width 0.3s ease',
                 mt: 9,
-                overflow: 'hidden', // Remove the scroll from the entire drawer
+                overflow: 'hidden',
               },
             }}
           >
@@ -445,15 +206,15 @@ function App() {
                 variant="fullWidth"
                 sx={{
                   marginBottom: 2,
-                  minHeight: '32px', // Adjust the height of the Tabs container
+                  minHeight: '32px',
                 }}
               >
                 <Tab
                   label="ALL"
                   sx={{
-                    minHeight: '32px', // Adjust the height of the individual tab
-                    padding: '6px 12px', // Adjust the padding
-                    fontSize: '0.875rem', // Adjust the font size
+                    minHeight: '32px',
+                    padding: '6px 12px',
+                    fontSize: '0.875rem',
                   }}
                 />
                 <Tab
@@ -524,13 +285,13 @@ function App() {
               flexGrow: 1,
               display: 'flex',
               flexDirection: 'column',
-              overflowY: 'auto', // Ensure the main content can scroll
+              overflowY: 'auto',
               transition: 'width 0.3s ease',
             }}
           >
             <Box sx={{
               flexGrow: 1,
-              overflowY: 'auto', // Allow vertical scrolling in main content
+              overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
               height: 'calc(100vh - 64px)'
@@ -539,7 +300,7 @@ function App() {
                 {daysOfWeek.map((day, index) => (
                   <Grid item xs={12} sm={6} md={2.4} key={index + 1} sx={{p: 0, height: '100%'}}>
                     <Card variant="outlined" sx={{height: "100%"}}>
-                      <CustomCardHeader day={format(day, "EEEE, MMM d")}/>
+                      <CardHeader day={format(day, "EEEE, MMM d")}/>
                       <Box sx={{flexGrow: 1, padding: "8px"}}>
                         <Droppable droppableId={`${index + 1}`} isCombineEnabled>
                           {(provided) => (
@@ -599,7 +360,7 @@ function App() {
                                           </IconButton>
                                         </Box>
                                       </Box>
-                                      {renderCombinedItems(item.combinedItems)}
+                                      <CardAccordion items={item.combinedItems}/>
                                     </Box>
                                   )}
                                 </Draggable>
